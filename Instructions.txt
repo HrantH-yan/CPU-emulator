@@ -1,0 +1,32 @@
+32 bit instructions consists from 4 bytes	Operation	source 1	source 2	destination
+                                            XXYYZZZZ	
+
+Operation byte itself conists of 3 parts 	XX Register or immediate(1,0 --> immed. src1, register src2)			
+	                                        YY is OP(ALU, Comparison, Storage operators or power off)			
+	                                        ZZZZ is instruction of OP(add, sub, equal ...)			
+
+A means either 1 or 0
+
+
+add	XX00 0000	add source 1 to source 2 and place result in destination register 
+sub	XX00 0001	sub source 2 from source 2 and place result in destination register
+mul	XX00 0002	multiply source 1 and source 2 and place result in destination register
+OR	XX00 0003	bitwise OR source 1 and source 2 and place result in destination register
+AND	XX00 0004	bitwise AND source 1 and source 2 and place result in destination register
+XOR	XX00 0005	bitwise XOR source 1 and source 2 and place result in destination register
+NOT	XX00 0006	bitwise NOT source 1 and place result in destination register
+SHL	XX00 0007	bitwise Left shift source 1 by source 2 and place result in destination register
+SHR	XX00 0008	bitwise Right shift source 1 by source 2 and place result in destination register
+		
+If =	XX01 0000	if src 1 = src2 set counter equal to destination(immediate)
+if <	XX01 0001	if src 1 < src2 set counter equal to destination(immediate)
+if >	XX01 0002	if src 1 > src2 set counter equal to destination(immediate)
+if <=	XX01 0003	if src 1 <= src2 set counter equal to destination(immediate)
+if >=	XX01 0004	if src 1 >= src2 set counter equal to destination(immediate)
+Always	AA01 0005	set counter equal to destination(immediate)
+		
+Store	AA10 0000	Store data in storage by default address register (dest is reg number to store)
+Load	AA10 0001	Load data from storage by default address register (dest is reg number to load)
+		(for any src1,src2)
+		
+Powoff	AA11AAAA	Program end
