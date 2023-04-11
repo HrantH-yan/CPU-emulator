@@ -1,11 +1,13 @@
 
 1    --  Failed to get Instruction from MainMemBus
-2, 4 --  Failed to read Input 
-3, 5 --  Wrong Instruction(source 1(2) address do not match any register number) 
+2    --  Failed to read Input(src1)
+4    --  Failed to read Input(src2) 
+3    --  Wrong Instruction(source 1 address do not match any register number)  
+5    --  Wrong Instruction(source 2 address do not match any register number) 
 6    --  Wrong Instruction(Operation code does not math any ALU Instruction)
 7    --  Failed to send data to output
 8    --  Wrong Instruction(Operation code does not math any Comparison Instruction)
-9    --  Failed to store data in Storage  !!(if RAM.bin is empty try to add few bytes in it)
+9    --  Failed to store data in Storage 
 10   --  Wrong Instruction(wrong register number to store)
 11   --  Failed to load data from Storage
 12   --  Wrong Instruction(wrong register number to load)

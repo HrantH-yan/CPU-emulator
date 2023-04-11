@@ -1,6 +1,6 @@
 typedef unsigned int word;
 #include <iostream>
-#include "output.h"
+#include "Output.h"
 #include "Terminal.h"
 
 

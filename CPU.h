@@ -1,6 +1,5 @@
-typedef unsigned int word;
 
-const word reg_count = 15; //may be GPR regs??
+const word reg_count = 15;
 const word counter_num = 14;
 const word DefAdrReg = reg_count - 2;
 const word input_num = 15;    // must be >= reg_count
@@ -15,6 +14,8 @@ class CPU
     StorageMemBus* SMemry;
     Input* in;
     Output* out;
+    Dbginfo* dbg_out;
+
     word regs[reg_count];
     word* counter = &regs[reg_count - 1];
     DecodedInstr DecInstr;
@@ -25,12 +26,13 @@ class CPU
     int decode();
     int execute();
     public:
-    CPU(MainMemBus* mainMem, StorageMemBus* storageMem, Input* input, Output* output)
+    CPU(MainMemBus* mainMem, StorageMemBus* storageMem, Input* input, Output* output, Dbginfo* dbg_output)
     {
         MMemry = mainMem;
         SMemry = storageMem;
         in = input;
         out = output;
+        dbg_out = dbg_output;
     }
     int run();
 };

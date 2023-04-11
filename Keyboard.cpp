@@ -1,8 +1,8 @@
 typedef unsigned int word;
 #include <iostream>
-#include "input.h"
+#include "Input.h"
 #include "Keyboard.h"
-
+#include "CustomExceptions.h"
 
 word Keyboard::read()
 {
@@ -20,7 +20,7 @@ word Keyboard::read()
         }
         else
         {
-            throw std::runtime_error("Wrong Input: Only non-negative integers allowed");
+            throw Input_ex();
         }
     }
     return in;

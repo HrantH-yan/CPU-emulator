@@ -1,10 +1,12 @@
-#include <iostream>
 #include "DecodedInstr.h"
 #include "MainMemBus.h"
 #include "StorageMemBus.h"
-#include "input.h"
-#include "output.h"
+#include "Input.h"
+#include "Output.h"
+#include "Dbginfo.h"
+#include "CustomExceptions.h"
 #include "CPU.h"
+
 
 
 int CPU::run()
@@ -55,9 +57,9 @@ int CPU::fetch()
             word temp = MMemry->GetInstr(*counter + (i*byte_quantity), byte_quantity);
             curr_instr = (curr_instr | (temp<<(8*(sizeof(word) - (i + 1)*byte_quantity))));
         }
-        catch(std::exception & ex)
+        catch(MMemory_ex)
         {
-            std::cerr<<ex.what()<<'\n';
+            dbg_out->dbgsend(1);
             return 1;
         }
     }                                  
@@ -70,9 +72,8 @@ int CPU::decode()
 
     //Instruction    
     DecInstr.Instr = ((curr_instr>>24) & 0xf);    //0000XXXX of Operation byte
-
-
-        bool isInputSrc1 = false; //if src1 is input then input src2 must be same src1!
+    
+    bool isInputSrc1 = false; //if src1 is input then input src2 must be same src1!
 
     //source 1
     if (((curr_instr>>24) & 0x80) == 0x80)            //Immediate src1 
@@ -88,9 +89,9 @@ int CPU::decode()
         *DecInstr.src1 = in->read();   
         isInputSrc1 = true;        
         }
-        catch(std::exception &ex)
+        catch(Input_ex)
         {
-            std::cerr<<ex.what()<<'\n';
+            dbg_out->dbgsend(2);
             return 2;
         }
     }
@@ -101,7 +102,7 @@ int CPU::decode()
     }
     else
     {
-        std::cerr<<"Unavailable Instruction code: Wrong source 1 address"<<'\n';
+        dbg_out->dbgsend(3);
         return 3;
     }
 
@@ -124,9 +125,9 @@ int CPU::decode()
             DecInstr.src2 = new word;
             *DecInstr.src2 = in->read();           
             }
-            catch(std::exception &ex)
+            catch(Input_ex)
             {
-                std::cerr<<ex.what()<<'\n';
+                dbg_out->dbgsend(4);
                 return 4;
             }            
         }
@@ -138,7 +139,7 @@ int CPU::decode()
     }
     else
     {
-        std::cerr<<"Unavailable Instruction code: Wrong source 2 address"<<'\n';
+        dbg_out->dbgsend(5);
         return 5;
     }
 
@@ -185,7 +186,7 @@ int CPU::execute()
             regs[DecInstr.dest] = (*DecInstr.src1)>>(*DecInstr.src2);
             break;
         default:
-            std::cerr<<"Wrong ALU instruction"<<'\n';
+            dbg_out->dbgsend(6);
             return 6;
         }
     }
@@ -223,13 +224,13 @@ int CPU::execute()
                 out->send((*DecInstr.src1)>>(*DecInstr.src2));
                 break;
             default:
-                std::cerr<<"Wrong ALU instruction"<<'\n';
+                dbg_out->dbgsend(6);
                 return 6;
             }       
         }
-        catch(const std::exception& ex)
+        catch(output_ex)
         {
-            std::cerr<<ex.what()<<'\n';
+            dbg_out->dbgsend(7);
             return 7;
         }
     }
@@ -277,7 +278,7 @@ int CPU::execute()
             counter_overwritten = true;
             break;
         default:
-            std::cerr<<"Wrong Comparison Instruction"<<'\n';
+            dbg_out->dbgsend(8);
             return 8; 
         }
     }
@@ -292,16 +293,16 @@ int CPU::execute()
                 {
                     SMemry->Store(regs[DefAdrReg], regs[DecInstr.dest]);
                 }
-                catch(const std::exception& ex)
+                catch(SMemory_ex)
                 {
-                    std::cerr<<ex.what()<<'\n';
+                    dbg_out->dbgsend(9);
                     return 9;
                 }
                 break;                
             }
             else 
             {
-                std::cerr<<"Wrong destination(number of Register) to store"<<'\n';
+                dbg_out->dbgsend(10);
                 return 10;
             }
             break;
@@ -312,15 +313,15 @@ int CPU::execute()
                 {
                     regs[DecInstr.dest] = SMemry->Load(regs[DefAdrReg]);
                 }
-                catch(const std::exception& ex)
+                catch(SMemory_ex)
                 {
-                    std::cerr<<ex.what()<<'\n';
+                    dbg_out->dbgsend(11);
                     return 11;
                 }
             }
             else
             {
-                std::cerr<<"Wrong destination(number of Register) to load"<<'\n';
+                dbg_out->dbgsend(12);
                 return 12;
             }
         default:
@@ -333,7 +334,7 @@ int CPU::execute()
     }
     else 
     {
-        std::cerr<<"Wrong ALU destination"<<'\n';
+        dbg_out->dbgsend(13);
         return 13;
     }
 
